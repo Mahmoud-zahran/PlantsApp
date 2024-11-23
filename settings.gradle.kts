@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "PlantsApp"
 include(":app")
 include(":domain")
+include(":data")
