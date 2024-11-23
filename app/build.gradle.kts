@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.plantsapp"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.plantsapp"
@@ -69,6 +69,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    implementation(libs.androidx.material3.window.sizeclass)
+
     // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
@@ -92,6 +94,9 @@ dependencies {
     annotationProcessor(libs.glide.compiler)
     //Coil
     implementation(libs.coil.compose)
+
+    // navigation compose
+    implementation(libs.androidx.navigation.compose)
     implementation(project(":domain"))
     implementation (project(":data"))
 }
