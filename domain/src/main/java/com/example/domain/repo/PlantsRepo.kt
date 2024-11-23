@@ -5,6 +5,6 @@ import com.example.domain.model.PlantsResponse
 import com.example.domain.model.Result
 
 interface PlantsRepo {
-   suspend fun getPlantsFromRemote():Result<PlantsResponse>
+   suspend fun getPlantsFromRemote(pageNumber:Int):Result<PlantsResponse>
 
 }
