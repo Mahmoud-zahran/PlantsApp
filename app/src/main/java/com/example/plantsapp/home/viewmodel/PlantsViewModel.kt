@@ -1,6 +1,9 @@
 package com.example.plantsapp.home.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.PlantsResponse
@@ -21,12 +24,18 @@ class PlantsViewModel @Inject constructor(
 
     private val _Plants: MutableStateFlow<Result<PlantsResponse>?> = MutableStateFlow(null)
     val plants: StateFlow<Result<PlantsResponse>?> = _Plants
+    var selectedTabIndex by mutableStateOf(0)
+        private set
 
-    fun getPlants(pageNumber: Int){
+    fun setSelectedTab(index: Int) {
+        selectedTabIndex = index
+    }
+    fun getPlants(distributionPath: String?, // Nullable path parameter
+         pageNumber: Int){
         viewModelScope.launch {
             _Plants.value = Result.Loading  // Set loading state
             try {
-                val result = getPlansUseCase(pageNumber)
+                val result = getPlansUseCase(distributionPath,pageNumber)
                 _Plants.value = result
                 Log.d(TAG, "getPlants: $result")
             } catch (e: Exception) {

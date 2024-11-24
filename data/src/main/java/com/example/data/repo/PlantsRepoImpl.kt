@@ -6,9 +6,10 @@ import com.example.domain.model.Result
 import com.example.domain.repo.PlantsRepo
 
 class PlantsRepoImpl(private val apiService: ApiService):PlantsRepo {
-    override suspend fun getPlantsFromRemote(pageNumber:Int): Result<PlantsResponse> {
+    override suspend fun getPlantsFromRemote(distributionPath: String?, // Nullable path parameter
+         pageNumber:Int): Result<PlantsResponse> {
         return try {
-            val response = apiService.getPlants(pageNumber)
+            val response = apiService.getPlants(distributionPath,pageNumber)
             if (response.isSuccessful) {
                 Result.Success(response.body()!!)
             } else {

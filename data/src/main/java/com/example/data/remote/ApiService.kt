@@ -3,6 +3,7 @@ package com.example.data.remote
 import com.example.domain.model.PlantsResponse
 import retrofit2.http.GET
 import retrofit2.Response
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -12,6 +13,7 @@ interface ApiService {
     //    token=0xOJ3_M4a3-zyJBJZ0t1hEz4pW3xO6gowOVsPBsRyw0
     //    &
     //    page=2
-    @GET("plants")
-    suspend fun getPlants( @Query("page") page: Int): Response<PlantsResponse>
+    @GET("{distributionPath}plants")
+    suspend fun getPlants(@Path(value = "distributionPath", encoded = true) distributionPath: String?, // Nullable path parameter
+                          @Query("page") page: Int): Response<PlantsResponse>
 }

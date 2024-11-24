@@ -64,6 +64,7 @@ fun PlantsAppScreen(
                             ) {
                                 composable("home") {
                                     PlantListScreen(
+                                        plantsViewModel = viewModel,
                                         plants = PlantsResult.data.data,
                                         navController = navController,
                                         modifier = Modifier.fillMaxSize()

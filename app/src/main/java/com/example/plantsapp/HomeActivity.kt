@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
         }
 
         lifecycleScope.launch {
-            plantsViewModel.getPlants(1)
+            plantsViewModel.getPlants("",1)
         }
     }
 }

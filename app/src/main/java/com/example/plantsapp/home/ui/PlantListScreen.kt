@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,28 +47,44 @@ import coil.request.ImageRequest
 import com.example.domain.model.Data
 import com.example.domain.model.InternalDataLinks
 import com.example.plantsapp.R
+import com.example.plantsapp.home.viewmodel.PlantsViewModel
 
 @Composable
-fun PlantListScreen(
+fun PlantListScreen(plantsViewModel: PlantsViewModel,
     plants: List<Data>, navController: NavController, modifier: Modifier = Modifier
 ) {
-    Column (Modifier.padding(top = 90.dp)){
-    // Tabs
-    val tabTitles = listOf("All", "Palestine", "Sudan","Myanmar","Transcaucasus","Uzbekistan")
-    var selectedTabIndex by remember { mutableStateOf(0) }
+    // Observe the ViewModel state directly
+    val selectedTabIndex = plantsViewModel.selectedTabIndex
+    Column(Modifier.padding(top = 90.dp)) {
+        // Tabs
+        val tabTitles =
+            listOf("All", "Palestine", "Sudan", "Myanmar", "Transcaucasus", "Uzbekistan")
 
 
         ScrollableTabRow(
             selectedTabIndex = selectedTabIndex,
             edgePadding = 1.dp, // Add padding at the edges
-            modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background),
             contentColor = MaterialTheme.colorScheme.surface,
         ) {
             tabTitles.forEachIndexed { index, title ->
                 Tab(
                     selected = selectedTabIndex == index,
-                    onClick = { selectedTabIndex = index }
-                    ,modifier = Modifier.background(if (selectedTabIndex == index) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.background),
+                    onClick = {
+                        plantsViewModel.setSelectedTab(index) // Update the selected tab index in the ViewModel
+                        when (index) {
+                            0 -> plantsViewModel.getPlants("", 1) // "All"
+                            1 -> plantsViewModel.getPlants("distributions/pal/", 1) // "Palestine"
+                            2 -> plantsViewModel.getPlants("distributions/sud/", 1) // "Sudan"
+//                            3 -> plantsViewModel.getPlants("distributions\\/pal\\/", 1) // "Palestine"
+                            3 -> plantsViewModel.getPlants("distributions/mya/", 1) // "Myanmar"
+                            4 -> plantsViewModel.getPlants("distributions/tcs/", 1) // "Transcaucasus"
+                            5 -> plantsViewModel.getPlants("distributions/uzbz/", 1) // "Uzbekistan"
+                        }
+                    },
+                    modifier = Modifier.background(if (selectedTabIndex == index) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.background),
 
                     ) {
                     Text(
@@ -83,7 +100,7 @@ fun PlantListScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding( bottom = 40.dp)
+                .padding(bottom = 40.dp)
         ) {
             items(plants) { plant ->
                 Box(modifier = Modifier
@@ -102,44 +119,50 @@ fun PlantListScreen(
 
 
 @Composable
-fun PlantItem(image_url: String,name: String, year: String, status: String) {
+fun PlantItem(image_url: String, name: String, year: String, status: String) {
 
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp, start = 2.dp, end = 2.dp).border(1.dp,color = MaterialTheme.colorScheme.onBackground, shape = RectangleShape).padding(8.dp).background(MaterialTheme.colorScheme.background), verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Placeholder for image
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp, bottom = 8.dp, start = 2.dp, end = 2.dp)
+            .border(1.dp, color = MaterialTheme.colorScheme.onBackground, shape = RectangleShape)
+            .padding(8.dp)
+            .background(MaterialTheme.colorScheme.background),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Placeholder for image
 
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
 //                .data("https://bs.plantnet.org/image/o/0d92cadb0d66dce1b0a8b26913125d6501e31d68.jpg")
-                    .data(
-                        "${
-                            image_url.replace(
-                                "http://", "https://"
-                            )
-                        }.jpg"
-                    ).crossfade(true).build(),
-                placeholder = painterResource(R.drawable.ic_launcher_foreground),
-                error = painterResource(R.drawable.ic_launcher_background),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(90.dp)
-            )
+                .data(
+                    "${
+                        image_url.replace(
+                            "http://", "https://"
+                        )
+                    }.jpg"
+                ).crossfade(true).build(),
+            placeholder = painterResource(R.drawable.ic_launcher_foreground),
+            error = painterResource(R.drawable.ic_launcher_background),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.size(90.dp)
+        )
 
-            Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(16.dp))
 
-            // Plant details
-            Column {
-                Text(text = "Name: $name", style = MaterialTheme.typography.bodyLarge)
-                Text(text = "Year: $year", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Status: $status", style = MaterialTheme.typography.bodyMedium)
-            }
+        // Plant details
+        Column {
+            Text(text = "Name: $name", style = MaterialTheme.typography.bodyLarge)
+            Text(text = "Year: $year", style = MaterialTheme.typography.bodyMedium)
+            Text(text = "Status: $status", style = MaterialTheme.typography.bodyMedium)
         }
+    }
 
 }
 
 @Preview
 @Composable
 fun PlantItemPreview() {
-    PlantItem("url","zahran","6","status")
+    PlantItem("url", "zahran", "6", "status")
 }
