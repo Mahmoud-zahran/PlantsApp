@@ -103,8 +103,14 @@ class PlantsViewModel @Inject constructor(
 
     fun loadNextPage() {
         if (!nextPageUrl.isNullOrEmpty()) {
-            val nextPageNum = nextPageUrl?.substringAfter("page=")?.toInt()?:1
-            val lastPageNum = lastPageUrl?.substringAfter("page=")?.toInt()?:1
+            val regex = Regex("page=(\\d+)")
+            val match = regex.find(nextPageUrl!!)
+            val nextPageNum = match?.groups?.get(1)?.value?.toInt()?:1
+//            val nextPageNum = nextPageUrl?.substringAfter("page=")?.toInt()?:1
+            val matchLast = regex.find(lastPageUrl!!)
+            val lastPageNum = matchLast?.groups?.get(1)?.value?.toInt()?:1
+
+//            val lastPageNum = lastPageUrl?.substringAfter("page=")?.toInt()?:1
             if (nextPageNum == 1){
                 _Plants.value = null
             }
