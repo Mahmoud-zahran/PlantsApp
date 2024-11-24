@@ -13,11 +13,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -41,6 +43,11 @@ fun PlantListScreen(plantsViewModel: PlantsViewModel,
 ) {
     // Observe the ViewModel state directly
     val selectedTabIndex = plantsViewModel.selectedTabIndex
+    val isLoading = plantsViewModel.isLoading
+
+    // LazyListState for tracking scroll position
+    val listState = rememberLazyListState()
+
     Column(Modifier.padding(top = 90.dp)) {
         // Tabs
         val tabTitles =
@@ -60,14 +67,16 @@ fun PlantListScreen(plantsViewModel: PlantsViewModel,
                     selected = selectedTabIndex == index,
                     onClick = {
                         plantsViewModel.setSelectedTab(index) // Update the selected tab index in the ViewModel
-                        when (index) {
+                        val distributionPath= plantsViewModel.getDistributionPathForTab(index)
+                        plantsViewModel.getPlants(distributionPath,1)
+                    /*    when (index) {
                             0 -> plantsViewModel.getPlants("", 1) // "All"
                             1 -> plantsViewModel.getPlants("distributions/pal/", 1) // "Palestine"
                             2 -> plantsViewModel.getPlants("distributions/sud/", 1) // "Sudan"
                             3 -> plantsViewModel.getPlants("distributions/mya/", 1) // "Myanmar"
                             4 -> plantsViewModel.getPlants("distributions/tcs/", 1) // "Transcaucasus"
-                            5 -> plantsViewModel.getPlants("distributions/uzbz/", 1) // "Uzbekistan"
-                        }
+                            5 -> plantsViewModel.getPlants("distributions/uzb/", 1) // "Uzbekistan"
+                        }*/
                     },
                     modifier = Modifier.background(if (selectedTabIndex == index) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.background),
 
@@ -83,6 +92,7 @@ fun PlantListScreen(plantsViewModel: PlantsViewModel,
             }
         }
         LazyColumn(
+            state = listState, // Set the state for the LazyColumn
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 40.dp)
@@ -100,7 +110,25 @@ fun PlantListScreen(plantsViewModel: PlantsViewModel,
                     }
                 }
             }
+// Load more indicator
+            item {
+                if (isLoading) {
+                    // Show loading indicator at the bottom when fetching more data
+                    Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                        Text(text = "Loading...", modifier = Modifier.align(Alignment.Center))
+                    }
+                }
+            }
+        }
+        // Detect when the user has scrolled to the bottom
+        LaunchedEffect(listState.layoutInfo.visibleItemsInfo.lastOrNull()) {
+            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
+            val totalItems = listState.layoutInfo.totalItemsCount
 
+            if (lastVisibleItem != null && lastVisibleItem.index == totalItems - 1 && isLoading) {
+                // Trigger loading more data when the last item is visible
+                plantsViewModel.loadNextPage()
+            }
         }
     }
 }
