@@ -1,5 +1,7 @@
 package com.example.plantsapp.home.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -36,9 +38,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.domain.model.Data
+import com.example.plantsapp.R
 import com.example.plantsapp.home.viewmodel.PlantsViewModel
 
 @Composable
@@ -48,6 +52,7 @@ fun PlantDetailsScreen(
     navController: NavController,
     viewModel: PlantsViewModel
 ) {
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -72,6 +77,8 @@ fun PlantDetailsScreen(
                         )
                         .crossfade(true)
                         .build(),
+                    placeholder = painterResource(R.drawable.ic_launcher_foreground),
+                    error = painterResource(R.drawable.ic_launcher_background),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -91,27 +98,46 @@ fun PlantDetailsScreen(
                 Column(modifier = Modifier.padding(start = 24.dp, top = 16.dp, end = 24.dp)) {
 
                     Text(
-                        "Name: ${plant.common_name}",
+                        "Name: ${plant.common_name?:"NA"}",
                         color = MaterialTheme.colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        "Family: ${plant.family ?: "No description available."}",
-                        color = MaterialTheme.colorScheme.onBackground,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        "Index: ${plant.id}",
+                        "Family: ${plant.family ?: "NA"}",
                         color = MaterialTheme.colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
+                    Row    {
+                        Text(
+                            "Index: ",
+                            color = MaterialTheme.colorScheme.onBackground,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        var index =""
+
+                            if(plant.bibliography.isEmpty() && plant.scientific_name.isEmpty()){
+                                index="Na"
+                            }else{
+                                index = plant.bibliography+"\n"+plant.scientific_name
+                            }
+
+
+                        Text(
+
+                            "${index?:"NA"}",
+                            color = MaterialTheme.colorScheme.onBackground,
+                            style = MaterialTheme.typography.bodyLarge,
+                            maxLines = 2
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     Text(
-                        "Author: ${plant.author ?: "No description available."}",
+                        "Author: ${plant.author ?: "NA"}",
                         color = MaterialTheme.colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyLarge
                     )
@@ -119,16 +145,29 @@ fun PlantDetailsScreen(
                 }
             }
 
-
-            // Related links section
             item {
                 // Load More Button placed at the bottom
                 Button(
-                    onClick = {  },
+                    onClick = {
+                        val wikipediaUrl = "https://en.wikipedia.org/wiki/${plant.scientific_name.replace(" ", "_")}"
+
+//                        if we need to open the link in external browser
+                       /*
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(wikipediaUrl))
+                        context.startActivity(intent)
+                        */
+
+//                       to open the link in intrnal web view
+                        navController.navigate("web_view?url=${Uri.encode(wikipediaUrl)}")
+
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .background(color = MaterialTheme.colorScheme.onBackground, shape = RectangleShape)
+                        .background(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            shape = RectangleShape
+                        )
                            , colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.onBackground, // Background color
                     contentColor = MaterialTheme.colorScheme.background // Text color

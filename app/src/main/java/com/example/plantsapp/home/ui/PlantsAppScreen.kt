@@ -88,6 +88,13 @@ fun PlantsAppScreen(
                                         )
                                     }
                                 }
+                                composable(
+                                    route = "web_view?url={url}",
+                                    arguments = listOf(navArgument("url") { type = NavType.StringType })
+                                ) { backStackEntry ->
+                                    val url = backStackEntry.arguments?.getString("url") ?: ""
+                                    WebViewScreen(url)
+                                }
                             }
                         } else {
                             Text("No Plants found.", modifier = Modifier.align(Alignment.Center), style = MaterialTheme.typography.bodyLarge)
