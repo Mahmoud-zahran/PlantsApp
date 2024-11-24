@@ -1,24 +1,16 @@
-package com.example.plantsapp
+package com.example.plantsapp.home
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.example.plantsapp.home.ui.PlantsAppScreen
 import com.example.plantsapp.home.viewmodel.PlantsViewModel
-import com.example.plantsapp.ui.theme.PlantsAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -42,6 +34,10 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             plantsViewModel.getPlants("",1)
         }
+    }
+    override fun onBackPressed() {
+            super.onBackPressed() // Default system back navigation
+
     }
 }
 

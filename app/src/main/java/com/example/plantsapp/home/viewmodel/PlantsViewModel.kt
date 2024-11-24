@@ -44,6 +44,10 @@ class PlantsViewModel @Inject constructor(
             }
         }
     }
-
+    fun reloadHome() {
+        // Reset the state
+        setSelectedTab(0) // Select the first tab
+        getPlants(distributionPath = "", pageNumber = 1) // Fetch data for the first tab
+    }
 
 }

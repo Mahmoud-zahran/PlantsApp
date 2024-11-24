@@ -7,32 +7,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.GenericShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardElevation
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -45,7 +32,6 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.domain.model.Data
-import com.example.domain.model.InternalDataLinks
 import com.example.plantsapp.R
 import com.example.plantsapp.home.viewmodel.PlantsViewModel
 
@@ -78,7 +64,6 @@ fun PlantListScreen(plantsViewModel: PlantsViewModel,
                             0 -> plantsViewModel.getPlants("", 1) // "All"
                             1 -> plantsViewModel.getPlants("distributions/pal/", 1) // "Palestine"
                             2 -> plantsViewModel.getPlants("distributions/sud/", 1) // "Sudan"
-//                            3 -> plantsViewModel.getPlants("distributions\\/pal\\/", 1) // "Palestine"
                             3 -> plantsViewModel.getPlants("distributions/mya/", 1) // "Myanmar"
                             4 -> plantsViewModel.getPlants("distributions/tcs/", 1) // "Transcaucasus"
                             5 -> plantsViewModel.getPlants("distributions/uzbz/", 1) // "Uzbekistan"
@@ -103,13 +88,16 @@ fun PlantListScreen(plantsViewModel: PlantsViewModel,
                 .padding(bottom = 40.dp)
         ) {
             items(plants) { plant ->
-                Box(modifier = Modifier
+                if (plant != null) {
+                    Box(modifier = Modifier
                     .fillMaxWidth()
 //                    .padding(8.dp)
                     .clickable {
                         navController.navigate("plant_details/${plant.id}")
                     }) {
-                    PlantItem(plant.image_url, plant.common_name, "${plant.year}", plant.status)
+
+                        PlantItem(plant.image_url, plant.common_name, "${plant.year}", plant.status)
+                    }
                 }
             }
 

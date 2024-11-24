@@ -44,9 +44,12 @@ fun PlantsAppScreen(
         Scaffold(
             topBar = {
                 if (currentDestination == "home") {
-                    PlantsTopBar("Plants")
+                    PlantsTopBar("Plants",navController)
                 }else if(currentDestination == "plant_details/{plantId}"){
-                    PlantsTopBar("Plants Details")
+                    PlantsTopBar("Plants Details",navController)
+
+                }else{
+                    PlantsTopBar("Plants loading",navController)
 
                 }
             }
@@ -70,7 +73,7 @@ fun PlantsAppScreen(
                                         modifier = Modifier.fillMaxSize()
                                     )
                                 }
-                              /*  composable(
+                                composable(
                                     "plant_details/{plantId}",
                                     arguments = listOf(navArgument("plantId") { type = NavType.IntType })
                                 ) { backStackEntry ->
@@ -84,20 +87,14 @@ fun PlantsAppScreen(
                                             viewModel = viewModel
                                         )
                                     }
-                                }*/
-
+                                }
                             }
                         } else {
                             Text("No Plants found.", modifier = Modifier.align(Alignment.Center), style = MaterialTheme.typography.bodyLarge)
                         }
                     }
                     is Result.Error -> {
-                        Text(
-                            text = "Error: ${PlantsResult.message}",
-                            modifier = Modifier.align(Alignment.Center),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.error
-                        )
+                        ErrorScreen(message = PlantsResult.message, onBack = {viewModel.reloadHome()})
                     }
                     null -> TODO()
                 }
